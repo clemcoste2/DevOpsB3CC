@@ -1,0 +1,43 @@
+# Étape de build
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Copie des fichiers de dépendances d'abord
+COPY package*.json ./
+
+# Installation de toutes les dépendances, y compris celles de développement
+RUN npm ci
+
+# Copie des sources
+COPY tsconfig.json ./
+COPY src/ ./src/
+
+# Compilation du TypeScript
+RUN npm run build
+
+# Étape d'exécution
+FROM node:18-alpine AS runtime
+
+# Création d'un utilisateur spécifique
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+WORKDIR /app
+
+# Copie des fichiers de dépendances
+COPY package*.json ./
+
+# Installation uniquement des dépendances de production
+RUN npm ci --omit=dev
+
+# Copie des fichiers compilés depuis l'étape de build
+COPY --from=builder /app/dist ./dist
+
+# Exposition du port (à adapter selon votre API)
+EXPOSE 3000
+
+# Utilisation de l'utilisateur non-root
+USER appuser
+
+# Commande de démarrage
+CMD ["node", "dist/index.js"]

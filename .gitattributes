@@ -1,0 +1,5 @@
+# Configuration des fins de ligne
+* text=auto
+
+# Force les scripts shell à utiliser LF
+*.sh text eol=lf

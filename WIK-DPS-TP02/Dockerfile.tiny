@@ -1,0 +1,25 @@
+# Étape de build
+FROM alpine:latest AS builder
+
+# Installation de GCC et optimisation des dépendances
+RUN apk --no-cache add gcc musl-dev
+
+# Copie du code source
+WORKDIR /build
+COPY tiny-counter.c .
+
+# Compilation statique et optimisée pour la taille
+RUN gcc -static -Os -fdata-sections -ffunction-sections -Wl,--gc-sections -s -o counter tiny-counter.c && \
+    strip -s counter
+
+# Création d'une image vide
+FROM scratch
+
+# Copie du binaire compilé
+COPY --from=builder /build/counter /counter
+
+# Définition de l'utilisateur avec un UID numérique (car pas de /etc/passwd dans scratch)
+USER 1000:1000
+
+# Exécution du binaire
+CMD ["/counter"]

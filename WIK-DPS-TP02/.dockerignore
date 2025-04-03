@@ -1,0 +1,27 @@
+# Fichiers et dossiers à ignorer lors de la construction de l'image Docker
+
+# Dépendances
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Build
+dist/
+build/
+
+# Fichiers de développement
+.env
+.env.local
+.git
+.gitignore
+.vscode/
+README.md
+
+# Divers
+Dockerfile
+Dockerfile.multi
+Dockerfile.tiny
+scan-images.sh
+setup.sh
+tiny-counter.c
